@@ -90,6 +90,7 @@ EXAMPLES = '''
 
 import os
 import re
+from collections import OrderedDict
 
 def _to_type(t):
     """ Returns `t` in the proper format, e.g. an int or a bool"""
@@ -117,11 +118,11 @@ def do_json(module, filename, key, value=None, as_string=False, state='present',
         destpath = os.path.dirname(filename)
         if not os.path.exists(destpath) and not module.check_mode:
             os.makedirs(destpath)
-        obj = json.loads('')
+        obj = json.loads('', object_pairs_hook=OrderedDict)
     else:
         json_file = open(filename, 'r')
         try:
-            obj = json.load(json_file)
+            obj = json.load(json_file, object_pairs_hook=OrderedDict)
         finally:
             json_file.close()
 
@@ -174,8 +175,7 @@ def do_json(module, filename, key, value=None, as_string=False, state='present',
             backup_file = module.backup_local(filename)
         json_file = open(filename, 'w')
         try:
-            json.dump(obj, json_file, indent=2, separators=(',', ': '),
-                      sort_keys=True)
+            json.dump(obj, json_file, indent=2, separators=(',', ': '))
         finally:
             json_file.close()
 
